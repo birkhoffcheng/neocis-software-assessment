@@ -64,7 +64,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
-	if (y > 410 * SCALE) {
+	if (y > 400 * SCALE || x > 400 * SCALE) {
 		if (generate_button.inside(x, y)) {
 			generate_circle();
 		}
