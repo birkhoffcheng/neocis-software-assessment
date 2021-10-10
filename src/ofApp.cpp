@@ -151,7 +151,7 @@ void ofApp::set_inner_circle() {
 }
 
 void ofApp::set_outer_circle() {
-	double lo = blue_circle_radius, hi = blue_circle_radius * 2, mid = blue_circle_radius;
+	double lo = blue_circle_radius, hi = 410 * SCALE, mid = blue_circle_radius;
 	while (abs(hi - lo) > 0.1) {
 		mid = (lo + hi) / 2;
 		if (radius_intersects_blue_squares(mid))
