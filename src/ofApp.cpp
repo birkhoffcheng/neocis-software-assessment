@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
 	int i, j;
-	ofSetWindowShape(410 * SCALE, 410 * SCALE);
+	ofSetWindowShape(410 * SCALE, 410 * SCALE + 90 * SCALE);
 	for (i = 0; i < NUM_POINTS; i++) {
 		for (j = 0; j < NUM_POINTS; j++) {
 			squares[i * NUM_POINTS + j].set(j * 20 * SCALE + 10 * SCALE, i * 20 * SCALE + 10 * SCALE, 10 * SCALE, 10 * SCALE);
@@ -13,8 +13,7 @@ void ofApp::setup() {
 	circle_center_x = 0;
 	circle_center_y = 0;
 	blue_circle_radius = 0;
-	inner_circle_radius = 0;
-	outer_circle_radius = 0;
+	generate_button.set(10 * SCALE, 410 * SCALE, 390 * SCALE, 80 * SCALE);
 }
 
 //--------------------------------------------------------------
@@ -34,12 +33,13 @@ void ofApp::draw() {
 		}
 		ofDrawRectangle(squares[i]);
 	}
+	ofSetColor(0, 127, 127);
+	ofDrawRectangle(generate_button);
+	ofSetColor(0, 0, 0);
+	ofDrawBitmapString("Generate", 175 * SCALE, 450 * SCALE);
 	ofSetColor(0, 0, 255);
 	ofNoFill();
 	ofDrawCircle(circle_center_x, circle_center_y, blue_circle_radius);
-	ofSetColor(255, 0, 0);
-	ofDrawCircle(circle_center_x, circle_center_y, inner_circle_radius);
-	ofDrawCircle(circle_center_x, circle_center_y, outer_circle_radius);
 }
 
 //--------------------------------------------------------------
@@ -59,27 +59,26 @@ void ofApp::mouseMoved(int x, int y) {
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
-	blue_circle_radius = distance(x, y, circle_center_x, circle_center_y);
+
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
-	circle_center_x = x;
-	circle_center_y = y;
-	blue_circle_radius = 0;
-	inner_circle_radius = 0;
-	outer_circle_radius = 0;
-	for (int i = 0; i < NUM_POINTS * NUM_POINTS; i++) {
-		square_blue[i] = false;
+	if (y > 410 * SCALE) {
+		if (generate_button.inside(x, y)) {
+			generate_circle();
+		}
+		return;
 	}
+	int i = (y - 5 * SCALE) / (20 * SCALE);
+	int j = (x - 5 * SCALE) / (20 * SCALE);
+	if (squares[i * NUM_POINTS + j].inside(x, y))
+		square_blue[i * NUM_POINTS + j] = !square_blue[i * NUM_POINTS + j];
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) {
-	blue_circle_radius = distance(x, y, circle_center_x, circle_center_y);
-	set_blue_squares();
-	set_inner_circle();
-	set_outer_circle();
+
 }
 
 //--------------------------------------------------------------
@@ -111,53 +110,6 @@ double ofApp::distance(int x1, int y1, int x2, int y2) {
 	return sqrt(pow(abs(x1 - x2), 2) + pow(abs(y1 - y2), 2));
 }
 
-void ofApp::set_blue_squares() {
-	int i, j, center_x, center_y;
-	for (i = 0; i < NUM_POINTS; i++) {
-		for (j = 0; j < NUM_POINTS; j++) {
-			center_x = squares[i * NUM_POINTS + j].x + 5 * SCALE;
-			center_y = squares[i * NUM_POINTS + j].y + 5 * SCALE;
-			if (abs(distance(circle_center_x, circle_center_y, center_x, center_y) - blue_circle_radius) <= 10.0 * SCALE)
-				square_blue[i * NUM_POINTS + j] = true;
-		}
-	}
-}
+void ofApp::generate_circle() {
 
-bool ofApp::radius_intersects_blue_squares(double radius) {
-	double degree, radian;
-	int x, y, i;
-	for (degree = 0; degree < 360; degree += 2) {
-		radian = degree * M_PI / 180;
-		x = circle_center_x + radius * cos(radian);
-		y = circle_center_y + radius * sin(radian);
-		for (i = 0; i < NUM_POINTS * NUM_POINTS; i++) {
-			if (square_blue[i] && squares[i].inside(x, y))
-				return true;
-		}
-	}
-	return false;
-}
-
-void ofApp::set_inner_circle() {
-	double hi = blue_circle_radius, lo = 0, mid = blue_circle_radius;
-	while (abs(hi - lo) > 0.1) {
-		mid = (lo + hi) / 2;
-		if (radius_intersects_blue_squares(mid))
-			hi = mid;
-		else
-			lo = mid;
-	}
-	inner_circle_radius = mid;
-}
-
-void ofApp::set_outer_circle() {
-	double lo = blue_circle_radius, hi = 410 * SCALE, mid = blue_circle_radius;
-	while (abs(hi - lo) > 0.1) {
-		mid = (lo + hi) / 2;
-		if (radius_intersects_blue_squares(mid))
-			lo = mid;
-		else
-			hi = mid;
-	}
-	outer_circle_radius = mid;
 }

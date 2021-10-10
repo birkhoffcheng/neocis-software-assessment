@@ -23,15 +23,11 @@ class ofApp : public ofBaseApp {
 		void gotMessage(ofMessage msg);
 
 		ofRectangle squares[NUM_POINTS * NUM_POINTS];
+		ofRectangle generate_button;
 		bool square_blue[NUM_POINTS * NUM_POINTS];
 		int circle_center_x;
 		int circle_center_y;
 		double blue_circle_radius;
-		double inner_circle_radius;
-		double outer_circle_radius;
 		double distance(int x1, int y1, int x2, int y2);
-		void set_blue_squares();
-		bool radius_intersects_blue_squares(double radius);
-		void set_inner_circle();
-		void set_outer_circle();
+		void generate_circle();
 };
